@@ -1,6 +1,9 @@
 package com.mthwate.dbd
 
+import net.dv8tion.jda.core.MessageBuilder
 import net.dv8tion.jda.core.entities.ChannelType
+import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.entities.impl.MessageImpl
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent
 
@@ -14,28 +17,46 @@ class MessageListener : ListenerAdapter() {
 		if (!event.author.isBot) {
 			val content = event.message.content.toLowerCase()
 
-			println(content)
-			println(event.channelType)
+			val split = content.split(' ')
 
-			if (content == "!start") {
-				if (event.channelType == ChannelType.TEXT) {
-					val channel = event.textChannel
-					if (game == null) {
-						val users = channel.members.map { it.user }
-						game = Game(users)
-						channel.sendMessage("Started a new game.").queue()
-					} else {
-						channel.sendMessage("A game is already started.").queue()
+			val cmd = split[0]
+
+			when(cmd) {
+
+				"!start" -> {
+					if (event.channelType == ChannelType.TEXT) {
+						val channel = event.textChannel
+						if (game == null) {
+							val users = channel.members.map { it.user }
+							game = Game(users)
+							channel.sendMessage(tts("Started a new game.")).queue()
+						} else {
+							channel.sendMessage("A game is already started.").queue()
+						}
 					}
 				}
-			} else if (content == "!stop") {
-				game?.close()
-				game = null
-				event.channel.sendMessage("Stopped the current game.").queue()
+
+				"!stop" -> {
+					game?.close()
+					game = null
+					event.channel.sendMessage("Stopped the current game.").queue()
+				}
+
+				"!mark" -> {
+					//TODO
+				}
+
+				"!heal" -> {
+					//TODO
+				}
+
 			}
 
-
 		}
+	}
+
+	private fun tts(text: String): Message {
+		return MessageBuilder().append(text).setTTS(true).build()
 	}
 
 }

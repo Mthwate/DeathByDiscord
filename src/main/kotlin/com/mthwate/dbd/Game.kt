@@ -16,7 +16,9 @@ class Game(users: List<User>) : Closeable {
 
 	val killer = users[rand.nextInt(users.size)]
 
-	val players = users.filter { it != killer }
+	val players = users.filter { it != killer }.toHashSet()
+
+	val marked = HashSet<User>()
 
 	fun mark(user: User) {
 
